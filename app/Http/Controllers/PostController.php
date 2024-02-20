@@ -7,7 +7,39 @@ use Illuminate\Support\Facades\DB;
  use App\Models\Post;
 
 
-class PostController extends Controller{
+class PostController extends Controller
+{
+
+    public function create() {
+        return view('posts.create');
+    }
+
+    public function confirm(Request $request) {
+        $title = $request->input('title');
+        $content = $request->input('content');
+
+        $variables = [
+            'title',
+            'content'
+        ];
+
+        return view('posts.confirm', compact($variables));
+    }
+
+    public function store(Request $request) {
+        $request->validate([
+            'title' => 'required|max:20',
+            'content' => 'required|max:200'
+        ]);
+
+        $post = new Post();
+        $post->title = $request->input('title');
+        $post->content = $request->input('content');
+        $post->save();
+
+        return redirect("/posts");
+    }
+
     public function index() {
 
         $posts = DB::table('posts')->get();
@@ -20,4 +52,5 @@ class PostController extends Controller{
 
         return view('posts.show', compact('post'));
     }
+
 }
